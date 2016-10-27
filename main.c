@@ -6,14 +6,14 @@
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
-#include<stdio.h>
-#include<features.h>
-#include<errno.h>
-#include<sys/ioctl.h>
-#include<net/ethernet.h>
-#include<arpa/inet.h>
-#include<string.h>
-#include<stdlib.h>
+#include  <stdio.h>
+#include  <features.h>
+#include  <errno.h>
+#include  <sys/ioctl.h>
+#include  <net/ethernet.h>
+#include  <arpa/inet.h>
+#include  <string.h>
+#include  <stdlib.h>
 
 
 
@@ -285,23 +285,25 @@ static int GetSvrMacAddress( char *pIface )
 ///
 /* Ripped from Richard Stevans Book */
 unsigned short computeIpChecksum(unsigned char *header, int len)
-{
+{ 
          long sum = 0;  /* assume 32 bit long, 16 bit short */
-	 unsigned short *ip_header = (unsigned short *)header;
+	     unsigned short *ip_header = (unsigned short *)header;
 
          while(len > 1){
-             sum += *((unsigned short*) ip_header)++;
-             if(sum & 0x80000000)   /* if high order bit set, fold */
-               sum = (sum & 0xFFFF) + (sum >> 16);
+             //sum += *((unsigned short*) ip_header)++;
+             sum += *ip_header++;
+             //if(sum & 0x80000000)   /* if high order bit set, fold */
+               //sum = (sum & 0xFFFF) + (sum >> 16);
              len -= 2;
          }
 
-         if(len)       /* take care of left over byte */
-             sum += (unsigned short) *(unsigned char *)ip_header;
+         //if(len)       /* take care of left over byte */
+         //    sum += (unsigned short) *(unsigned char *)ip_header;
           
-         while(sum>>16)
-             sum = (sum & 0xFFFF) + (sum >> 16);
-
+         //while(sum>>16)
+         //    sum = (sum & 0xFFFF) + (sum >> 16);
+        sum = (sum >> 16) + (sum & 0xFFFF);
+        sum += (sum >> 16);
         return ~sum;
 }
 
@@ -984,7 +986,7 @@ void httpRequest(int s,  struct sockaddr *socket_address, char *srcip, char *gat
 
 //char gatewayip[] = "152.2.131.227";
 //char gatewayip[] = "152.2.130.115";
-char gatewayip[] = "152.2.128.1";
+char gatewayip[] = "172.19.100.100";
 //char gatewayip[] = "8.8.8.8";
 
 ///
@@ -1070,7 +1072,7 @@ int main(int argc, char **argv) {
 	//		Get our Gateway's MAC Address
 	//
 	printf("-------------------------------------------\n");
-	printf("Arping our Gateway IP to get its MAC Address...\n");
+	printf("Arping our Gateway IP %s to get its MAC Address...\n",gatewayip);
 	
 	char* gateMac;
 	gateMac = arpRequest(s,socket_address,srcip,gatewayip);
